@@ -43,7 +43,7 @@ const Hero = ({ slice }: HeroProps): JSX.Element => {
           opacity: 0,
           ease: "power4.in",
           delay: 0,
-          stagger: 0.1,
+          stagger: 0.5,
         })
         .from(
           ".hero-subheading",
