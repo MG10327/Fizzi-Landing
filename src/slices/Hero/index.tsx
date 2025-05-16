@@ -12,7 +12,7 @@ import { Bounded } from "@/components/Bounded";
 import Button from "@/components/Button";
 import { TextSplitter } from "@/components/TextSplitter";
 import Scene from "./Scene";
-import { Bubbles } from "./Bubbles";
+// import { Bubbles } from "./Bubbles";
 import { useStore } from "@/hooks/useStore";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 
@@ -27,12 +27,12 @@ export type HeroProps = SliceComponentProps<Content.HeroSlice>;
  * Component for "Hero" Slices.
  */
 const Hero = ({ slice }: HeroProps): JSX.Element => {
-  const ready = useStore((state) => state.ready);
-  const isDesktop = useMediaQuery("(min-width: 768px)", true);
+//   const ready = useStore((state) => state.ready);
+//   const isDesktop = useMediaQuery("(min-width: 768px)", true);
 
   useGSAP(
     () => {
-      if (!ready && isDesktop) return;
+    //   if (!ready && isDesktop) return;
 
       const introTl = gsap.timeline();
 
@@ -42,8 +42,8 @@ const Hero = ({ slice }: HeroProps): JSX.Element => {
           scale: 3,
           opacity: 0,
           ease: "power4.in",
-          delay: 0.3,
-          stagger: 1,
+          delay: 0,
+          stagger: 0.1,
         })
         .from(
           ".hero-subheading",
@@ -98,7 +98,6 @@ const Hero = ({ slice }: HeroProps): JSX.Element => {
           opacity: 0,
         });
     },
-    { dependencies: [ready, isDesktop] },
   );
 
   return (
@@ -107,12 +106,9 @@ const Hero = ({ slice }: HeroProps): JSX.Element => {
       data-slice-variation={slice.variation}
       className="hero opacity-0"
     >
-      {isDesktop && (
         <View className="hero-scene pointer-events-none sticky top-0 z-50 -mt-[100vh] hidden h-screen w-screen md:block">
           <Scene />
-          <Bubbles count={300} speed={2} repeat={true} />
         </View>
-      )}
 
       <div className="grid">
         <div className="grid h-screen place-items-center">
@@ -120,8 +116,8 @@ const Hero = ({ slice }: HeroProps): JSX.Element => {
             <h1 className="hero-header text-7xl font-black uppercase leading-[.8] text-orange-500 md:text-[9rem] lg:text-[13rem]">
               <TextSplitter
                 text={asText(slice.primary.heading)}
-                wordDisplayStyle="block"
-                className="hero-header-word"
+                wordDisplayStyle="inline-block"
+                className="hero-header-word text-balance"
               />
             </h1>
             <div className="hero-subheading mt-12 text-5xl font-semibold text-sky-950 lg:text-6xl">
