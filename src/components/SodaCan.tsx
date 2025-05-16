@@ -59,7 +59,7 @@ export function SodaCan({
             <mesh
                 castShadow // we want this to have shadows under it
                 receiveShadow // we want this to take shadows on itself.
-                geometry={(nodes.cylinder as THREE.mesh).geometry} // we want this to have the physics of a cylinder in three
+                geometry={(nodes.cylinder as THREE.Mesh).geometry} // we want this to have the physics of a cylinder in three
             >
                 <meshStandardMaterial roughness={0.15} metalness={0.7} map={label} />
                 {/* Applies the custom roughness , metalic settings and labels to this mesh */}
