@@ -59,12 +59,15 @@ const Scene = (props: Props) => {
     }) // defines our timeline
 
 
-    // now we animate the timeline.
-    introTimeline
-    .from(can1GroupRef.current.position, {y: -5, x: 1}, 0)
-    .from(can1GroupRef.current.position, {z: 3}, 0)
-    .from(can2GroupRef.current.position, {y: 5, x: 1}, 0)
-    .from(can2GroupRef.current.position, {z: 3}, 0)
+    if(window.scrollY < 20){
+            // now we animate the timeline.
+      introTimeline
+      .from(can1GroupRef.current.position, {y: -5, x: 1}, 0)
+      .from(can1GroupRef.current.position, {z: 3}, 0)
+      .from(can2GroupRef.current.position, {y: 5, x: 1}, 0)
+      .from(can2GroupRef.current.position, {z: 3}, 0)
+
+    }
 
     // now we make our scrollTimeline
     const scrollTimeline = gsap.timeline({
@@ -82,6 +85,32 @@ const Scene = (props: Props) => {
     // now we animate that timeline.
     scrollTimeline
     .to(groupRef.current.rotation, {y: Math.PI * 2}) // 360 degrees.
+
+    // Can 1 black cherry
+    .to(can1Ref.current.position, {x: -0.2, y: -0.7, z: -2}, 0) // starts at the start of the scroll timeline.
+    .to(can1Ref.current.rotation, {z: 0.3}, 0) // starts at the start of the scroll timeline.
+
+
+    // Can 2 Lemon lime
+    .to(can2Ref.current.position, {x: 1, y: -.2, z: -1}, 0) // starts at the start of the scroll timeline.
+    .to(can2Ref.current.rotation, {z: -0.1}, 0) // starts at the start of the scroll timeline.
+
+
+    // Can 3 grape
+    .to(can3Ref.current.position, {x: -0.3, y: 0.5, z: -1}, 0) // starts at the start of the scroll timeline.
+    .to(can3Ref.current.rotation, {z: -0.1}, 0) // starts at the start of the scroll timeline.
+
+
+    // Can 4 strawberry lemonade
+    .to(can4Ref.current.position, {x: 0, y: -.3, z: .5}, 0) // starts at the start of the scroll timeline.
+    .to(can4Ref.current.rotation, {z: -0.1}, 0) // starts at the start of the scroll timeline.
+
+
+    // Can 5 watermelon
+    .to(can5Ref.current.position, {x: .3, y: -.3, z: .5}, 0) // starts at the start of the scroll timeline.
+    .to(can5Ref.current.rotation, {z: -.25}, 0) // starts at the start of the scroll timeline.
+
+    .to(groupRef.current.position, {x: 1, duration: 3, ease: 'sine.inOut'}, 1.3)
   })
 
 
