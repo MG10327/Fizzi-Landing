@@ -26,42 +26,44 @@ export default function Scene({ sentence, flavor }: SkyDiveProps) {
   const cloudsRef = useRef<THREE.Group>(null);
   const wordsRef = useRef<THREE.Group>(null);
 
-  const ANGLE = 75 * (Math.PI / 180)
+  const ANGLE = 75 * (Math.PI / 180);
 
-  const getXPosition = (distance: number) => distance * Math.cos(ANGLE)
-  const getYPosition = (distance: number) => distance * Math.cos(ANGLE)
+  const getXPosition = (distance: number) => distance * Math.cos(ANGLE);
+  const getYPosition = (distance: number) => distance * Math.sin(ANGLE);
 
   const getXYPositions = (distance: number) => ({
     x: getXPosition(distance),
-    y: getYPosition(-1 * distance)
-  })
+    y: getYPosition(-1 * distance),
+  });
 
   useGSAP(() => {
-    if(
-      // first we check if our refs are there.
+    if (
       !cloudsRef.current ||
-      !wordsRef.current ||
       !canRef.current ||
+      !wordsRef.current ||
       !cloud1Ref.current ||
       !cloud2Ref.current
-    ) return // stops if the refs aren't there
+    )
+      return;
 
-    // now we continue with our animation
-    gsap.set(cloudsRef.current.position, {z: 10})
+    // Set initial positions
+    gsap.set(cloudsRef.current.position, { z: 10 });
+    gsap.set(canRef.current.position, {
+      ...getXYPositions(-4),
+    });
 
-    gsap.set(canRef.current.position, {...getXYPositions(-4)})
+    gsap.set(
+      wordsRef.current.children.map((word) => word.position),
+      { ...getXYPositions(7), z: 2 },
+    );
 
-    // now we do each individual word
-    gsap.set(wordsRef.current.children.map((word) => word.position), {...getXYPositions(7)})
-
+    // Spinning can
     gsap.to(canRef.current.rotation, {
       y: Math.PI * 2,
       duration: 1.7,
       repeat: -1,
-      ease: 'none'
-    })
-
-
+      ease: "none",
+    });
 
     // Infinite cloud movement
     const DISTANCE = 15;
@@ -88,44 +90,48 @@ export default function Scene({ sentence, flavor }: SkyDiveProps) {
       duration: DURATION,
     });
 
-    const scrollTimeline = gsap.timeline({
-      // defines the timeline we're gonna animate on scroll trigger
-      scrollTrigger : {
-        trigger: '.skydive',
+    const scrollTl = gsap.timeline({
+      scrollTrigger: {
+        trigger: ".skydive",
         pin: true,
-        start: 'top top',
-        end: 'bottom bottom',
-        scrub: 1.5 // scrub based playback control
-      }
-    })
+        start: "top top",
+        end: "+=2000",
+        scrub: 1.5,
+      },
+    });
 
-    // now we animate that timeline.
-    scrollTimeline.to('body', {
-      backgroundColor: '#C0F0F5',
-      overwrite: 'auto', // prioritizes this animation if another runs at the same time
-      duration: 0.1
-    })
+    scrollTl
+      .to("body", {
+        backgroundColor: "#C0F0F5",
+        overwrite: "auto",
+        duration: 0.1,
+      })
+      .to(cloudsRef.current.position, { z: 0, duration: 0.3 }, 0)
+      .to(canRef.current.position, {
+        x: 0,
+        y: 0,
+        duration: 0.3,
+        ease: "back.out(1.7)",
+      })
+      .to(
+        wordsRef.current.children.map((word) => word.position),
+        {
+          keyframes: [
+            { x: 0, y: 0, z: -1 },
+            { ...getXYPositions(-7), z: -7 },
+          ],
+          stagger: 0.3,
+        },
+        0,
+      )
+      .to(canRef.current.position, {
+        ...getXYPositions(4),
+        duration: 0.5,
+        ease: "back.in(1.7)",
+      })
+      .to(cloudsRef.current.position, { z: 7, duration: 0.5 });
+  });
 
-    .to(cloudsRef.current.position, {z: 0, duration: .3}, 0)
-    .to(canRef.current.position, {x: 0, y: 0, duration: .3, ease: 'back.out(1.7)'})
-    .to(wordsRef.current.children.map((word) => word.position),
-  {
-    keyframes: [
-      {x: 0, y: 0, z: -1},
-      {...getXYPositions(-7), z: -7}
-    ],
-    stagger: .3
-  }, 0) // starts at the beginning
-
-
-    // makes the can fly by and leave the scene and the clouds too
-    .to(canRef.current.position, {
-      ...getXYPositions(4),
-      duration: 0.5,
-      ease: 'back.in(1.7)'
-    })
-    .to(cloudsRef.current.position, {z: 7, duration: 0.5})
-  })
   return (
     <group ref={groupRef}>
       {/* Can */}
@@ -137,18 +143,15 @@ export default function Scene({ sentence, flavor }: SkyDiveProps) {
           floatIntensity={3}
           floatSpeed={3}
         >
-          {/* Adds an axis for the can so its spins on its own axis. */}
-          <pointLight  intensity={30} color='#8C0413' decay={0.6}/>
+          <pointLight intensity={30} color="#8C0413" decay={0.6} />
         </FloatingCan>
       </group>
 
       {/* Clouds */}
       <Clouds ref={cloudsRef}>
-        <Cloud ref={cloud1Ref} bounds={[10, 10, 2]}/>
-        <Cloud ref={cloud2Ref} bounds={[10, 10, 2]}/>
+        <Cloud ref={cloud1Ref} bounds={[10, 10, 2]} />
+        <Cloud ref={cloud2Ref} bounds={[10, 10, 2]} />
       </Clouds>
-
-
 
       {/* Text */}
       <group ref={wordsRef}>
@@ -177,14 +180,14 @@ function ThreeText({
   return words.map((word: string, wordIndex: number) => (
     <Text
       key={`${wordIndex}-${word}`}
-      scale={isDesktop ? 1: .5}
+      scale={isDesktop ? 1 : 0.5}
       color={color}
       material={material}
-      font='/fonts/Alpino-Variable.woff'
+      font="/fonts/Alpino-Variable.woff"
       fontWeight={900}
-      anchorX={'center'}
-      anchorY={'middle'}
-      characters='ABCDEFGHIJKLMNOPQRSTUVWXYZ!,.?'
+      anchorX={"center"}
+      anchorY={"middle"}
+      characters="ABCDEFGHIJKLMNOPQRSTUVWXYZ!,.?'"
     >
       {word}
     </Text>
