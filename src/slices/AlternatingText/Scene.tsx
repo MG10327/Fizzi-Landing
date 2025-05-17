@@ -59,13 +59,11 @@ export default function Scene({}: Props) {
             },
             "<",
           )
-          .to(".alternating-text-container", {
-            backgroundColor: gsap.utils.wrap(bgColors, index),
-          });
-      });
-    },
-    { dependencies: [isDesktop] },
-  );
+          .to('alternating-text-container', {
+            backgroundColor: gsap.utils.wrap(bgColors, index)
+          })
+    })
+  }, {dependencies: [isDesktop]})
 
   return (
     <group
