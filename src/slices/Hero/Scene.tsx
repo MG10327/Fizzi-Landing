@@ -43,7 +43,7 @@ export default function Scene({}: Props) {
     )
       return;
 
-    isReady();
+    isReady(); // sets is ready to true so the animation will start in the index tsx for the hero
 
     // Set can starting location
     gsap.set(can1Ref.current.position, { x: -1.5 });
