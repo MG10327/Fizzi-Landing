@@ -5,10 +5,17 @@ import { SodaCanProps } from "@/components/SodaCan";
 import {Content} from "@prismicio/client"
 import { PrismicRichText, SliceComponentProps, PrismicText } from "@prismicio/react"
 import { Center, Environment, View } from "@react-three/drei";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { ArrowIcon } from "./ArrowIcon";
 import clsx from "clsx";
+import { Group } from "three";
+import gsap from 'gsap'
 import { WavyCircles } from "./WavyCircles";
+
+
+
+const SPINS_ON_CHANGE = 8 // 8 spins on can change (carousel change)
+
 
 const FLAVORS: {
   flavor: SodaCanProps["flavor"];
@@ -26,18 +33,49 @@ const FLAVORS: {
   { flavor: "watermelon", color: "#4B7002", name: "Watermelon Crush" },
 ];
 
-type Props = {}
 
 export type CarouselProps = SliceComponentProps<Content.CarouselSlice>
 
 const Carousel = ({slice}: CarouselProps): JSX.Element => {
   const [currentFlavorIndex, setCurrentFlavorIndex] = useState(0)
 
+  const sodaCanRef = useRef<Group>(null)
+
+
   function changeFlavor(index: number){
+    if(!sodaCanRef.current) return
+
     const nextIndex = (index + FLAVORS.length) % FLAVORS.length
 
-    setCurrentFlavorIndex(nextIndex)
+    const timeline = gsap.timeline() // defines timeline
+
+    // now we animate the timeline
+    timeline.to(
+      sodaCanRef.current.rotation, {
+        y: index > currentFlavorIndex
+        ? `-=${Math.PI * 2 * SPINS_ON_CHANGE}` // 8 360 degree spins
+        : `+=${Math.PI * 2 * SPINS_ON_CHANGE}`, // 8 360 degree spins
+        ease: 'power2.inOut', // powerful animation easing.
+        duration: 1 // 1 second duration
+      }
+    )
+    .to('.background, .wavy-circles-outer, .wavy-circles-inner', {
+      backgroundColor: FLAVORS[nextIndex].color, // changes the bg color
+      fill:  FLAVORS[nextIndex].color, // changes the color
+      ease: 'power2.inOut', // powerful animation easing
+      duration: 1 // 1 second duration
+    }, 0) // starts at the beginning.
+
+    .to('.text-wrapper', {duration: .2, y: -10, opacity: 0}, 0)
+    .to(
+      {},
+      {onStart: () => setCurrentFlavorIndex(nextIndex)}
+      ,.5
+    )
+    .to('.text-wrapper', {duration: 0.2, y: 0, opacity: 1}, 0.7)
+
   }
+
 
   return (
     <section
