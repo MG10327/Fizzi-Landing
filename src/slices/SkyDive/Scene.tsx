@@ -108,8 +108,23 @@ export default function Scene({ sentence, flavor }: SkyDiveProps) {
 
     .to(cloudsRef.current.position, {z: 0, duration: .3}, 0)
     .to(canRef.current.position, {x: 0, y: 0, duration: .3, ease: 'back.out(1.7)'})
+    .to(wordsRef.current.children.map((word) => word.position),
+  {
+    keyframes: [
+      {x: 0, y: 0, z: -1},
+      {...getXYPositions(-7), z: -7}
+    ],
+    stagger: .3
+  }, 0) // starts at the beginning
 
-    
+
+    // makes the can fly by and leave the scene and the clouds too
+    .to(canRef.current.position, {
+      ...getXYPositions(4),
+      duration: 0.5,
+      ease: 'back.in(1.7)'
+    })
+    .to(cloudsRef.current.position, {z: 7, duration: 0.5})
   })
   return (
     <group ref={groupRef}>
@@ -123,7 +138,7 @@ export default function Scene({ sentence, flavor }: SkyDiveProps) {
           floatSpeed={3}
         >
           {/* Adds an axis for the can so its spins on its own axis. */}
-          <pointLight intensity={30} color="#8C0413" decay={0.6} />
+          <pointLight  intensity={30} color='#8C0413' decay={0.6}/>
         </FloatingCan>
       </group>
 
